@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ransomware Behavioral Profiling</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ransomware Behavioral Profiling</h1>
+    <table id="logTable">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Status</th>
+                <th>Root</th>
+                <th>Process Name</th>
+                <th>Description</th>
+                <th>Confidence Score</th>
+                <th>Security Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Logs will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchLogs() {
+            const response = await fetch("/get_logs");
+            const logs = await response.json();
+            const tableBody = document.querySelector("#logTable tbody");
+            tableBody.innerHTML = logs.map(log => `
+                <tr>
+                    <td>${log.filename}</td>
+                    <td>${log.status}</td>
+                    <td>${log.root}</td>
+                    <td>${log.process_name}</td>
+                    <td>${log.description}</td>
+                    <td>${log.confidence_score}</td>
+                    <td>${log.security_level}</td>
+                </tr>
+            `).join("");
+        }
+
+        setInterval(fetchLogs, 5000); // Refresh logs every 5 seconds
+        fetchLogs(); // Initial fetch
+    </script>
+</body>
+</html>

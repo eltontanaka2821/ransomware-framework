@@ -1,6 +1,10 @@
 import os
 import re
-from datetime import datetime
+import time
+import threading
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__)
 
 # Predefined rules for ransomware behavior
 RANSOMWARE_PATTERNS = {
@@ -8,6 +12,8 @@ RANSOMWARE_PATTERNS = {
     "suspicious_process": re.compile(r"ransom|malware|trojan", re.IGNORECASE),
     "file_modification": re.compile(r"\.encrypted|\.locked|\.ransom", re.IGNORECASE),
     "suspicious_root": re.compile(r"/root|/admin", re.IGNORECASE),
+    "suspicious_network": re.compile(r"tor|vpn|proxy", re.IGNORECASE),
+    "suspicious_cloud": re.compile(r"unauthorized|access denied", re.IGNORECASE),
 }
 
 # Security levels based on confidence score
@@ -17,6 +23,9 @@ SECURITY_LEVELS = {
     2: "High",
     3: "Critical"
 }
+
+# Simulated log storage
+logs = []
 
 def analyze_log(log_entry):
     """
@@ -52,6 +61,18 @@ def analyze_log(log_entry):
         description += "Encryption-related activity detected. "
         status = "Suspicious"
 
+    # Check for suspicious network activity
+    if RANSOMWARE_PATTERNS["suspicious_network"].search(log_entry.get("network_log", "")):
+        confidence_score += 1
+        description += "Suspicious network activity detected. "
+        status = "Suspicious"
+
+    # Check for suspicious cloud activity
+    if RANSOMWARE_PATTERNS["suspicious_cloud"].search(log_entry.get("cloud_log", "")):
+        confidence_score += 1
+        description += "Suspicious cloud activity detected. "
+        status = "Suspicious"
+
     # Determine security level based on confidence score
     security_level = SECURITY_LEVELS.get(min(confidence_score, 3), "Unknown")
 
@@ -75,26 +96,66 @@ def process_logs(logs):
         results.append(result)
     return results
 
-def display_results(results):
+def monitor_network():
     """
-    Display the results in the specified format.
+    Simulate network monitoring.
     """
-    print("filename----status----root------process_name-----description---confidence_score------security_level")
-    for result in results:
-        print(
-            f"{result['filename']}----{result['status']}----{result['root']}------"
-            f"{result['process_name']}-----{result['description']}---{result['confidence_score']}------"
-            f"{result['security_level']}"
-        )
+    while True:
+        # Simulate network log generation
+        network_log = {
+            "filename": "network_log",
+            "path": "/var/log/network",
+            "process_name": "network_service",
+            "description": "Network activity detected.",
+            "network_log": "tor connection established"
+        }
+        logs.append(network_log)
+        time.sleep(10)
 
-# Example log entries
-logs = [
-    {"filename": "document.txt.encrypted", "path": "/home/user/documents", "process_name": "ransomware.exe", "description": "File encrypted using AES-256."},
-    {"filename": "photo.jpg", "path": "/home/user/pictures", "process_name": "image_viewer.exe", "description": "File opened for viewing."},
-    {"filename": "report.pdf", "path": "/root/documents", "process_name": "malware.exe", "description": "File accessed by suspicious process."},
-    {"filename": "data.db", "path": "/home/user/database", "process_name": "backup_tool.exe", "description": "File backed up successfully."},
-]
+def monitor_cloud():
+    """
+    Simulate cloud access monitoring.
+    """
+    while True:
+        # Simulate cloud log generation
+        cloud_log = {
+            "filename": "cloud_log",
+            "path": "/var/log/cloud",
+            "process_name": "cloud_service",
+            "description": "Cloud access detected.",
+            "cloud_log": "unauthorized access attempt"
+        }
+        logs.append(cloud_log)
+        time.sleep(15)
 
-# Process logs and display results
-results = process_logs(logs)
-display_results(results)
+@app.route("/")
+def index():
+    """
+    Render the front-end interface.
+    """
+    return render_template("index.html")
+
+@app.route("/get_logs", methods=["GET"])
+def get_logs():
+    """
+    Return processed logs to the front-end.
+    """
+    results = process_logs(logs)
+    return jsonify(results)
+
+@app.route("/add_log", methods=["POST"])
+def add_log():
+    """
+    Allow users to add custom logs.
+    """
+    log_entry = request.json
+    logs.append(log_entry)
+    return jsonify({"status": "Log added successfully"})
+
+if __name__ == "__main__":
+    # Start network and cloud monitoring in separate threads
+    threading.Thread(target=monitor_network, daemon=True).start()
+    threading.Thread(target=monitor_cloud, daemon=True).start()
+
+    # Start the Flask app
+    app.run(debug=True)
