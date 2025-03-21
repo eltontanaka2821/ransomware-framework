@@ -1,161 +1,101 @@
-import os
-import re
+import logging
 import time
-import threading
-from flask import Flask, render_template, request, jsonify
+from collections import defaultdict
+from typing import Dict, List
 
-app = Flask(__name__)
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Predefined rules for ransomware behavior
-RANSOMWARE_PATTERNS = {
-    "encryption": re.compile(r"encrypt|aes|rsa|des", re.IGNORECASE),
-    "suspicious_process": re.compile(r"ransom|malware|trojan", re.IGNORECASE),
-    "file_modification": re.compile(r"\.encrypted|\.locked|\.ransom", re.IGNORECASE),
-    "suspicious_root": re.compile(r"/root|/admin", re.IGNORECASE),
-    "suspicious_network": re.compile(r"tor|vpn|proxy", re.IGNORECASE),
-    "suspicious_cloud": re.compile(r"unauthorized|access denied", re.IGNORECASE),
-}
+# Mock data source (e.g., logs, network traffic)
+class DataSource:
+    def __init__(self):
+        self.data = [
+            {"timestamp": time.time(), "user": "admin", "action": "login", "source_ip": "192.168.1.1"},
+            {"timestamp": time.time(), "user": "user1", "action": "access_file", "file": "secret.txt"},
+            {"timestamp": time.time(), "user": "admin", "action": "logout", "source_ip": "192.168.1.1"},
+            {"timestamp": time.time(), "user": "attacker", "action": "brute_force", "source_ip": "10.0.0.1"},
+        ]
 
-# Security levels based on confidence score
-SECURITY_LEVELS = {
-    0: "Low",
-    1: "Medium",
-    2: "High",
-    3: "Critical"
-}
+    def get_data(self):
+        return self.data
 
-# Simulated log storage
-logs = []
+# Monitoring Component
+class Monitor:
+    def __init__(self, data_source):
+        self.data_source = data_source
 
-def analyze_log(log_entry):
-    """
-    Analyze a log entry for ransomware behavior.
-    """
-    filename = log_entry.get("filename", "unknown")
-    status = "Clean"
-    root = "No"
-    process_name = log_entry.get("process_name", "unknown")
-    description = ""
-    confidence_score = 0
+    def collect_data(self):
+        return self.data_source.get_data()
 
-    # Check for suspicious root access
-    if RANSOMWARE_PATTERNS["suspicious_root"].search(log_entry.get("path", "")):
-        root = "Yes"
-        confidence_score += 1
-        description += "Suspicious root access detected. "
+# Behavioral Engine Component
+class BehavioralEngine:
+    def __init__(self):
+        self.normal_behavior = {"admin": ["login", "logout"], "user1": ["access_file"]}
 
-    # Check for suspicious process names
-    if RANSOMWARE_PATTERNS["suspicious_process"].search(process_name):
-        confidence_score += 1
-        description += "Suspicious process name detected. "
+    def analyze_behavior(self, data: List[Dict]):
+        anomalies = []
+        for entry in data:
+            user = entry.get("user")
+            action = entry.get("action")
+            if user in self.normal_behavior:
+                if action not in self.normal_behavior[user]:
+                    anomalies.append(entry)
+            else:
+                anomalies.append(entry)
+        return anomalies
 
-    # Check for file modifications indicating encryption
-    if RANSOMWARE_PATTERNS["file_modification"].search(filename):
-        confidence_score += 2
-        description += "File modification indicating encryption detected. "
-        status = "Suspicious"
+# Detection Component
+class Detector:
+    def __init__(self):
+        self.threat_rules = [
+            {"action": "brute_force", "description": "Potential brute force attack"},
+            {"action": "access_file", "file": "secret.txt", "description": "Unauthorized access to secret file"}
+        ]
 
-    # Check for encryption-related keywords in the log
-    if RANSOMWARE_PATTERNS["encryption"].search(log_entry.get("description", "")):
-        confidence_score += 1
-        description += "Encryption-related activity detected. "
-        status = "Suspicious"
+    def detect_threats(self, data: List[Dict]):
+        detected_threats = []
+        for entry in data:
+            for rule in self.threat_rules:
+                if all(entry.get(key) == value for key, value in rule.items() if key != "description"):
+                    detected_threats.append((entry, rule["description"]))
+        return detected_threats
 
-    # Check for suspicious network activity
-    if RANSOMWARE_PATTERNS["suspicious_network"].search(log_entry.get("network_log", "")):
-        confidence_score += 1
-        description += "Suspicious network activity detected. "
-        status = "Suspicious"
+# Alerting Component
+class Alerter:
+    def __init__(self):
+        pass
 
-    # Check for suspicious cloud activity
-    if RANSOMWARE_PATTERNS["suspicious_cloud"].search(log_entry.get("cloud_log", "")):
-        confidence_score += 1
-        description += "Suspicious cloud activity detected. "
-        status = "Suspicious"
+    def send_alert(self, message):
+        logging.warning(f"ALERT: {message}")
 
-    # Determine security level based on confidence score
-    security_level = SECURITY_LEVELS.get(min(confidence_score, 3), "Unknown")
+# Main Framework
+class CybersecurityFramework:
+    def __init__(self):
+        self.data_source = DataSource()
+        self.monitor = Monitor(self.data_source)
+        self.behavioral_engine = BehavioralEngine()
+        self.detector = Detector()
+        self.alerter = Alerter()
 
-    return {
-        "filename": filename,
-        "status": status,
-        "root": root,
-        "process_name": process_name,
-        "description": description.strip(),
-        "confidence_score": confidence_score,
-        "security_level": security_level
-    }
+    def run(self):
+        # Step 1: Monitor and collect data
+        data = self.monitor.collect_data()
+        logging.info("Data collected for analysis.")
 
-def process_logs(logs):
-    """
-    Process a list of log entries and generate results.
-    """
-    results = []
-    for log in logs:
-        result = analyze_log(log)
-        results.append(result)
-    return results
+        # Step 2: Analyze behavior
+        anomalies = self.behavioral_engine.analyze_behavior(data)
+        if anomalies:
+            logging.info(f"Behavioral anomalies detected: {anomalies}")
 
-def monitor_network():
-    """
-    Simulate network monitoring.
-    """
-    while True:
-        # Simulate network log generation
-        network_log = {
-            "filename": "network_log",
-            "path": "/var/log/network",
-            "process_name": "network_service",
-            "description": "Network activity detected.",
-            "network_log": "tor connection established"
-        }
-        logs.append(network_log)
-        time.sleep(10)
+        # Step 3: Detect threats
+        threats = self.detector.detect_threats(data)
+        if threats:
+            for threat, description in threats:
+                logging.info(f"Threat detected: {threat} - {description}")
+                # Step 4: Send alerts
+                self.alerter.send_alert(f"Threat detected: {description}")
 
-def monitor_cloud():
-    """
-    Simulate cloud access monitoring.
-    """
-    while True:
-        # Simulate cloud log generation
-        cloud_log = {
-            "filename": "cloud_log",
-            "path": "/var/log/cloud",
-            "process_name": "cloud_service",
-            "description": "Cloud access detected.",
-            "cloud_log": "unauthorized access attempt"
-        }
-        logs.append(cloud_log)
-        time.sleep(15)
-
-@app.route("/")
-def index():
-    """
-    Render the front-end interface.
-    """
-    return render_template("index.html")
-
-@app.route("/get_logs", methods=["GET"])
-def get_logs():
-    """
-    Return processed logs to the front-end.
-    """
-    results = process_logs(logs)
-    return jsonify(results)
-
-@app.route("/add_log", methods=["POST"])
-def add_log():
-    """
-    Allow users to add custom logs.
-    """
-    log_entry = request.json
-    logs.append(log_entry)
-    return jsonify({"status": "Log added successfully"})
-
+# Run the framework
 if __name__ == "__main__":
-    # Start network and cloud monitoring in separate threads
-    threading.Thread(target=monitor_network, daemon=True).start()
-    threading.Thread(target=monitor_cloud, daemon=True).start()
-
-    # Start the Flask app
-    app.run(debug=True)
+    framework = CybersecurityFramework()
+    framework.run()
