@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 class BehavioralEngine:
     def __init__(self):
         self.ransomware_patterns = {

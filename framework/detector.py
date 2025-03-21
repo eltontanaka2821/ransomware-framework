@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 class Detector:
     def __init__(self):
         self.threshold = 1  # Minimum number of anomalies to trigger detection
