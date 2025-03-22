@@ -1,0 +1,19 @@
+Metadata-Version: 2.4
+Name: framework
+Version: 0.1
+Summary: A cybersecurity framework for ransomware behavioral profiling.
+Home-page: https://github.com/eltontanaka2821/ransomware-framework
+Author: Elton Mukarati
+Author-email: eltontanakamukarati@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+License-File: LICENSE
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+Dynamic: summary

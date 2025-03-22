@@ -1,5 +1,5 @@
 import pytest
-from framework.core.detector import Detector
+from ..core.detector import Detector
 
 def test_detector_detect_threats():
     detector = Detector(threshold=1)

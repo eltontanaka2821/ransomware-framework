@@ -1,21 +1,21 @@
-# setup.py
 from setuptools import setup, find_packages
 
 setup(
-    name="ransomware-framework",  # Replace with your package name
-    version="0.1.0",              # Initial version
-    author="Elton Tanaka Mukarati",
+    name="framework",
+    version="0.1",
+    package_dir={"": "src"},  # Look for packages in the `src/` directory
+    packages=find_packages(where="src"),  # Find packages in `src/`
+    install_requires=[
+        # Add dependencies here
+    ],
+    description="A cybersecurity framework for ransomware behavioral profiling.",
+    author="Elton Mukarati",
     author_email="eltontanakamukarati@gmail.com",
-    description="A Python package for demonstrating a ransomware framework",
-    long_description=open("README.md").read(),
-    long_description_content_type="text/markdown",
-    url="https://github.com/eltontanaka2821/ransomware-framework",  # Replace with your repo URL
-    packages=find_packages(),  # Automatically find packages
+    url="https://github.com/eltontanaka2821/ransomware-framework",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.6",  # Specify Python version compatibility
-    install_requires=[],      # List dependencies here (if any)
+    python_requires=">=3.6",
 )

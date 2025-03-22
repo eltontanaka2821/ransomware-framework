@@ -1,5 +1,5 @@
 import logging
-from framework.core.alerter import Alerter
+from .core.alerter import Alerter
 
 def test_alerter_send_alert(caplog):
     alerter = Alerter()
