@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "rbprof"
-version = "0.1.0"
-description = "Ransomware Framework for behavioral profiling"
+version = "0.1.2"
+description = "cybersecurity framework designed for behavioral profiling and analysis of ransomware."
 authors = ["Elton Tanaka Mukarati <eltontanakamukarati@gmail.com>"]
 license = "MIT"
-readme = ""
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
