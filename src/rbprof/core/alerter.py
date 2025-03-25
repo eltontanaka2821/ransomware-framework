@@ -1,11 +1,14 @@
-import logging
+import json
+import hashlib
+from datetime import datetime
+import numpy as np
 
-class Alerter:
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
-
-    def send_alert(self, message: str):
-        """
-        Sends an alert when ransomware is detected.
-        """
-        self.logger.warning(f"RANSOMWARE ALERT: {message}")
+class AlertingModule:
+    @staticmethod
+    def decide(x_scored):
+        """Final ransomware verdict"""
+        return {
+            **x_scored,
+            "verdict": "RANSOMWARE" if x_scored["scores"]["threat"] >= 70 else "SAFE",
+            "response": "ISOLATE_AND_ROLLBACK" if x_scored["scores"]["threat"] >= 70 else "MONITOR"
+        }

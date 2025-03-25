@@ -1,13 +1,37 @@
-from typing import List, Dict
+import json
+import hashlib
+from datetime import datetime
+import numpy as np  
 
-class Detector:
+class DetectionModule:
     def __init__(self):
-        self.threshold = 1  # Minimum number of anomalies to trigger detection
-
-    def detect_ransomware(self, anomalies: List[Dict]) -> bool:
-        """
-        Detects ransomware based on the number of anomalies.
-        """
-        if len(anomalies) >= self.threshold:
-            return True
-        return False
+        self.encryption_threshold = 50  
+    
+    def evaluate(self, x_double_prime):
+        """Compute detection scores and flags"""
+        # Encryption Score (0-100)
+        encryption_score = min(100, x_double_prime.get("encrypted_files", 0) * 2)
+        
+        # Behavioral Flags
+        flags = {
+            "crypto_api_used": any(api in x_double_prime["apis"] 
+                               for api in ["CryptEncrypt", "BCryptEncrypt"]),
+            "c2_detected": len(x_double_prime["network"]["connections"]) > 0,
+            "vss_deleted": "DeleteShadowCopies" in x_double_prime["apis"]
+        }
+        
+        # Composite Threat Score (0-100)
+        threat_score = (
+            0.4 * encryption_score +
+            0.3 * (100 if flags["c2_detected"] else 0) +
+            0.3 * (100 if flags["vss_deleted"] else 0)
+        )
+        
+        return {
+            **x_double_prime,
+            "scores": {
+                "encryption": encryption_score,
+                "threat": threat_score
+            },
+            "flags": flags
+        }

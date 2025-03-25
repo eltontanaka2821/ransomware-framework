@@ -1,6 +1,4 @@
-Here’s a comprehensive `README.md` file for your **Ransomware Framework**. This file explains the purpose of the framework, how to install it, and provides examples of its usage.
 
----
 
 # **Ransomware Framework**
 
