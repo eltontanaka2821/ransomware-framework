@@ -1,4 +1,7 @@
-from rbprof.core.monitor import MonitoringModule
+from src.rbprof.core.monitor import MonitoringModule
+from src.rbprof.core.alerter import AlertingModule
+from src.rbprof.core.detector import DetectionModule
+from src.rbprof.core.behavioral_engine import BehaviorEngine
 
 
 if __name__ == "__main__":
