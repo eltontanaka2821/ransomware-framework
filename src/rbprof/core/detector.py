@@ -9,10 +9,10 @@ class DetectionModule:
     
     def evaluate(self, x_double_prime):
         """Compute detection scores and flags"""
-        # Encryption Score (0-100)
+        
         encryption_score = min(100, x_double_prime.get("encrypted_files", 0) * 2)
         
-        # Behavioral Flags
+        
         flags = {
             "crypto_api_used": any(api in x_double_prime["apis"] 
                                for api in ["CryptEncrypt", "BCryptEncrypt"]),
@@ -20,7 +20,7 @@ class DetectionModule:
             "vss_deleted": "DeleteShadowCopies" in x_double_prime["apis"]
         }
         
-        # Composite Threat Score (0-100)
+        
         threat_score = (
             0.4 * encryption_score +
             0.3 * (100 if flags["c2_detected"] else 0) +

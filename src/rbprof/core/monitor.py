@@ -3,9 +3,7 @@ from datetime import datetime
 import numpy as np
 from typing import Dict, Any
 
-# ======================
-# 1. Monitoring Module
-# ======================
+
 class MonitoringModule:
     @staticmethod
     def calculate_entropy(data: bytes) -> float:
@@ -27,10 +25,10 @@ class MonitoringModule:
             
             return {
                 "file": filepath,
-                "entropy": float(self.calculate_entropy(data)),  # Ensure float
-                "size_MB": float(len(data) / (1024 * 1024)),    # Ensure float
-                "extension": str(filepath.split(".")[-1]),       # Ensure string
-                "is_suspicious": bool(self.calculate_entropy(data) > 7.0)  # Explicit bool
+                "entropy": float(self.calculate_entropy(data)),  
+                "size_MB": float(len(data) / (1024 * 1024)),    
+                "extension": str(filepath.split(".")[-1]),       
+                "is_suspicious": bool(self.calculate_entropy(data) > 7.0)  
             }
         except Exception as e:
             return {

@@ -10,7 +10,7 @@ class BehaviorEngine:
 
     def analyze(self, x_prime):
         """Transform X' → X'' with behavioral indicators"""
-        # Simulate API monitoring (real-world: use API hooks)
+        
         api_calls = self._trace_apis(x_prime["file"])
         
         # Simulate network analysis
