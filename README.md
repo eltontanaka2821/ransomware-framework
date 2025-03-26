@@ -91,10 +91,10 @@ framework.run()
 Extend the behavioral analysis engine:
 
 ```python
-from ransomware_framework import BehavioralEngine
+from ransomware_framework import BehaviorEngine
 
 # Create a custom behavioral engine
-class CustomBehavioralEngine(BehavioralEngine):
+class CustomBehavioralEngine(BehaviorEngine):
     def analyze_behavior(self, data):
         anomalies = []
         for entry in data:
