@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rbprof",
-    version="0.1.6",
+    version="0.1.7",
     package_dir={"": "src"},  # Look for packages in the `src/` directory
     packages=find_packages(where="src"),  # Find packages in `src/`
     install_requires=[
