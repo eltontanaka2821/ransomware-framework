@@ -31,7 +31,7 @@ pip install rbprof
 Import the framework and initialize the components:
 
 ```python
-from ransomware_framework import CybersecurityFramework
+from rbprof import CybersecurityFramework
 
 # Initialize the framework
 framework = CybersecurityFramework()
@@ -46,7 +46,7 @@ framework.run()
 Add custom data sources or monitoring tools:
 
 ```python
-from ransomware_framework import Monitor, DataSource
+from rbprof import Monitor, DataSource
 
 # Create a custom data source
 class CustomDataSource(DataSource):
@@ -69,7 +69,7 @@ framework.run()
 Define custom threat detection rules:
 
 ```python
-from ransomware_framework import Detector
+from rbprof import Detector
 
 # Create a custom detector
 class CustomDetector(Detector):
@@ -91,7 +91,7 @@ framework.run()
 Extend the behavioral analysis engine:
 
 ```python
-from ransomware_framework import BehaviorEngine
+from rbprof import BehaviorEngine
 
 # Create a custom behavioral engine
 class CustomBehavioralEngine(BehaviorEngine):
