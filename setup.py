@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="framework",
-    version="0.1",
+    name="rbprof",
+    version="0.1.6",
     package_dir={"": "src"},  # Look for packages in the `src/` directory
     packages=find_packages(where="src"),  # Find packages in `src/`
     install_requires=[
