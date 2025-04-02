@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rbprof"
-version = "0.1.7"
+version = "0.1.8"
 description = "cybersecurity framework designed for behavioral profiling and analysis of ransomware."
 authors = ["Elton Tanaka Mukarati <eltontanakamukarati@gmail.com>"]
 license = "MIT"

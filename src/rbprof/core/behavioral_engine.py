@@ -2,6 +2,7 @@ import json
 import hashlib
 from datetime import datetime
 import numpy as np  
+import os
 
 class BehaviorEngine:
     def __init__(self):
